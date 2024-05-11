@@ -1,11 +1,37 @@
-import {React ,useState}from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, Dimensions,TouchableOpacity } from 'react-native';
+import { React, useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
+import BottomNavigation from '../Components/BottomNavigation';;
 const windowWidth = Dimensions.get('window').width;
 
 const SupportScreen = () => {
   const [current, setCurrent] = useState("test");
+  const [quantities, setQuantities] = useState({
+    "Pre Buy Streaming": 1,
+    "Pre Buy Ticket": 1,
+    "Meet and Greet": 1,
+    "Founder's Credit": 1,
+    "Filming Day Tour": 1,
+    "Walk On Role": 1,
+  });
+
+  const incrementQuantity = (category) => {
+    setQuantities({
+      ...quantities,
+      [category]: quantities[category] + 1,
+    });
+  };
+
+  const decrementQuantity = (category) => {
+    if (quantities[category] > 1) {
+      setQuantities({
+        ...quantities,
+        [category]: quantities[category] - 1,
+      });
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Support Heading with Logo */}
@@ -13,61 +39,134 @@ const SupportScreen = () => {
         <FontAwesome5 name="hand-holding-heart" size={24} color="white" />
         <Text style={styles.headingText}>Support</Text>
       </View>
-      <View style={{ marginTop: 50 }}>
-      <RadioButtonGroup
-        containerStyle={{ marginBottom: 10 }}
-        selected={current}
-        onSelected={(value) => setCurrent(value)}
-        radioBackground="green"
-      >
-        <RadioButtonItem value="test2" label="Example with string" />
-        <RadioButtonItem
-          value="test"
-          label={
-            <Text style={{ color: "red" }}>Example passing React Element</Text>
-          }
-        />
-      </RadioButtonGroup>
-    </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* Table */}
         <View style={styles.table}>
           {/* Table Header */}
-          <View style={styles.tableRow}>
-            <Text style={styles.tableHeader}>Category</Text>
-            <Text style={styles.tableHeader}>Quantity</Text>
-            <Text style={styles.tableHeader}>Price</Text>
+          <View style={[styles.tableRow, styles.header]}>
+            <Text style={[styles.tableHeader, styles.center]}>Category</Text>
+            <Text style={[styles.tableHeader, styles.center]}>Quantity</Text>
+            <Text style={[styles.tableHeader, styles.center]}>Price</Text>
           </View>
           {/* Table Body */}
           <View style={styles.tableRow}>
-            {/* <RadioButton value="first" /> */}
-            <Text style={styles.tableData}>Category 1</Text>
+            <RadioButtonGroup
+              selected={current}
+              onSelected={(value) => setCurrent(value)}
+              radioBackground='#FF8A00'
+            >
+              <RadioButtonItem value="Pre Buy Streaming" label="Pre Buy Streaming/DVD" />
+            </RadioButtonGroup>
             <View style={styles.quantityContainer}>
-              <Button title="-" style={styles.quantityButton} />
-              <TextInput style={styles.quantityInput} value="1" />
-              <Button title="+" style={styles.quantityButton} />
+              <TouchableOpacity style={styles.quantityButton} onPress={() => decrementQuantity("Pre Buy Streaming")}>
+                <Text style={{color:"#FF8A00"}}>-</Text>
+              </TouchableOpacity>
+              <TextInput style={styles.quantityInput} value={quantities["Pre Buy Streaming"].toString()} />
+              <TouchableOpacity style={styles.quantityButton} onPress={() => incrementQuantity("Pre Buy Streaming")}>
+                <Text style={{color:"#FF8A00"}}>+</Text>
+              </TouchableOpacity>
             </View>
-            <Text style={styles.tableData}>$10</Text>
+            <Text style={styles.tableData}>$20</Text>
           </View>
+
           <View style={styles.tableRow}>
-            {/* <RadioButton value="second" /> */}
-            <Text style={styles.tableData}>Category 2</Text>
+            <RadioButtonGroup
+              selected={current}
+              onSelected={(value) => setCurrent(value)}
+              radioBackground='#FF8A00'
+            >
+              <RadioButtonItem value="Pre Buy Ticket" label="Pre Buy Ticket" />
+            </RadioButtonGroup>
             <View style={styles.quantityContainer}>
-              <Button title="-" style={styles.quantityButton} />
-              <TextInput style={styles.quantityInput} value="1" />
-              <Button title="+" style={styles.quantityButton} />
+              <TouchableOpacity style={styles.quantityButton} onPress={() => decrementQuantity("Pre Buy Ticket")}>
+                <Text style={{color:"#FF8A00"}}>-</Text>
+              </TouchableOpacity>
+              <TextInput style={styles.quantityInput} value={quantities["Pre Buy Ticket"].toString()} />
+              <TouchableOpacity style={styles.quantityButton} onPress={() => incrementQuantity("Pre Buy Ticket")}>
+                <Text style={{color:"#FF8A00"}}>+</Text>
+              </TouchableOpacity>
             </View>
             <Text style={styles.tableData}>$20</Text>
           </View>
           <View style={styles.tableRow}>
             {/* <RadioButton value="third" /> */}
-            <Text style={styles.tableData}>Category 3</Text>
+            <RadioButtonGroup
+              selected={current}
+              onSelected={(value) => setCurrent(value)}
+              radioBackground='#FF8A00'
+            >
+              <RadioButtonItem value="Meet and Greet" label="Meet and Greet Cast" />
+            </RadioButtonGroup>
             <View style={styles.quantityContainer}>
-              <Button title="-" style={styles.quantityButton} />
-              <TextInput style={styles.quantityInput} value="1" />
-              <Button title="+" style={styles.quantityButton} />
+              <TouchableOpacity style={styles.quantityButton} onPress={() => decrementQuantity("Meet and Greet")}>
+                <Text style={{color:"#FF8A00"}}>-</Text>
+              </TouchableOpacity>
+              <TextInput style={styles.quantityInput} value={quantities["Meet and Greet"].toString()} />
+              <TouchableOpacity style={styles.quantityButton} onPress={() => incrementQuantity("Meet and Greet")}>
+                <Text style={{color:"#FF8A00"}}>+</Text>
+              </TouchableOpacity>
             </View>
-            <Text style={styles.tableData}>$30</Text>
+            <Text style={styles.tableData}>$1000</Text>
+          </View>
+          <View style={styles.tableRow}>
+            {/* <RadioButton value="third" /> */}
+            <RadioButtonGroup
+              selected={current}
+              onSelected={(value) => setCurrent(value)}
+              radioBackground='#FF8A00'
+            >
+              <RadioButtonItem value="Founder's Credit" label="Founder's Credit" />
+            </RadioButtonGroup>
+            <View style={styles.quantityContainer}>
+              <TouchableOpacity style={styles.quantityButton} onPress={() => decrementQuantity("Founder's Credit")}>
+                <Text style={{color:"#FF8A00"}}>-</Text>
+              </TouchableOpacity>
+              <TextInput style={styles.quantityInput} value={quantities["Founder's Credit"].toString()} />
+              <TouchableOpacity style={styles.quantityButton} onPress={() => incrementQuantity("Founder's Credit")}>
+                <Text style={{color:"#FF8A00"}}>+</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.tableData}>$1500</Text>
+          </View>
+          <View style={styles.tableRow}>
+            {/* <RadioButton value="third" /> */}
+            <RadioButtonGroup
+              selected={current}
+              onSelected={(value) => setCurrent(value)}
+              radioBackground='#FF8A00'
+            >
+              <RadioButtonItem value="Filming Day Tour" label="Filming Day Tour" />
+            </RadioButtonGroup>
+            <View style={styles.quantityContainer}>
+              <TouchableOpacity style={styles.quantityButton} onPress={() => decrementQuantity("Filming Day Tour")}>
+                <Text style={{color:"#FF8A00"}}>-</Text>
+              </TouchableOpacity>
+              <TextInput style={styles.quantityInput} value={quantities["Filming Day Tour"].toString()} />
+              <TouchableOpacity style={styles.quantityButton} onPress={() => incrementQuantity("Filming Day Tour")}>
+                <Text style={{color:"#FF8A00"}}>+</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.tableData}>$5000</Text>
+          </View>
+          <View style={styles.tableRow}>
+            {/* <RadioButton value="third" /> */}
+            <RadioButtonGroup
+              selected={current}
+              onSelected={(value) => setCurrent(value)}
+              radioBackground='#FF8A00'
+            >
+              <RadioButtonItem value="Walk On Role" label="Walk On Role"/>
+            </RadioButtonGroup>
+            <View style={styles.quantityContainer}>
+              <TouchableOpacity style={styles.quantityButton} onPress={() => decrementQuantity("Walk On Role")}>
+                <Text style={{color:"#FF8A00"}}>-</Text>
+              </TouchableOpacity>
+              <TextInput style={styles.quantityInput} value={quantities["Walk On Role"].toString()} />
+              <TouchableOpacity style={styles.quantityButton} onPress={() => incrementQuantity("Walk On Role")}>
+                <Text style={{color:"#FF8A00"}}>+</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.tableData}>$18000</Text>
           </View>
         </View>
         {/* Input Fields */}
@@ -79,14 +178,15 @@ const SupportScreen = () => {
         </View>
         {/* Buttons */}
         <View style={styles.buttonContainer}>
-         <TouchableOpacity>
-          <Text style={styles.button1}>Support Now</Text>
-         </TouchableOpacity>
-         <TouchableOpacity>
-          <Text style={styles.button2}>Share</Text>
-         </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={styles.button1}>Support Now</Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={styles.button2}>Share</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
+      <BottomNavigation/>
     </View>
   );
 };
@@ -115,37 +215,44 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   table: {
-    backgroundColor: '#fff',
+   
     paddingHorizontal: 20,
   },
   tableRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
-    paddingVertical: 8,
+    paddingVertical: 4,
+    width:windowWidth
   },
+
   tableHeader: {
     fontWeight: 'bold',
     width: '30%',
   },
   tableData: {
     flex: 1,
-    textAlign: 'center',
   },
   quantityContainer: {
     flexDirection: 'row',
+    justifyContent: 'center', // center the quantity inputs
     alignItems: 'center',
+    marginHorizontal:10
   },
   quantityButton: {
     padding: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
+    borderWidth: 2,
+    borderColor: '#FF8A00',
+    color: '#FF8A00',
   },
   quantityInput: {
     borderWidth: 1,
     borderColor: '#ddd',
     paddingHorizontal: 8,
+    paddingVertical: 4,
+    width: 50,
+    textAlign: 'center',
   },
   inputContainer: {
     marginVertical: 16,
@@ -160,23 +267,29 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginVertical: 16,
-    flexDirection: 'col',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+    justifyContent: 'pace-between',
     paddingHorizontal: 20,
+    paddingBottom:80
   },
   button1: {
     color: 'white',
-    backgroundColor:'#FF8A00',
-    textAlign:'center',
-    paddingVertical:10,
-    marginBottom:8
+    backgroundColor: '#FF8A00',
+    textAlign: 'center',
+    paddingVertical: 10,
+    marginBottom: 8
   },
   button2: {
     color: '#FF8A00',
-    borderWidth:1,
-    borderColor:'#FF8A00',
+    borderWidth: 1,
+    borderColor: '#FF8A00',
+textAlign: 'center',
+    paddingVertical: 10
+  },
+  center: {
     textAlign:'center',
-    paddingVertical:10
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
