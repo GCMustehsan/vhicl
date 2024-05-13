@@ -1,11 +1,27 @@
 import { Link, router } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
 const Login = () => {
-  const hanldelogin=()=>{
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = () => {
+    if (username.trim() === '') {
+      setError('Please enter your username');
+      return;
+    }
+    if (password.trim() === '') {
+      setError('Please enter your password');
+      return;
+    }
+    // Perform login logic here, e.g., send request to server
+
+    // For demonstration purposes, just navigating to Profile screen
     router.push('/Screens/Profile');
-  }
+  };
+
   return (
     <View style={styles.container}>
       {/* Login Logo */}
@@ -25,6 +41,8 @@ const Login = () => {
           <TextInput
             style={styles.input}
             placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
           />
         </View>
       </View>
@@ -36,15 +54,18 @@ const Login = () => {
             style={styles.input}
             placeholder="Password"
             secureTextEntry
+            value={password}
+            onChangeText={setPassword}
           />
         </View>
       </View>
-      {/* Forgot Password Link */}
       <View style={styles.forgotPassword}>
         <Text style={styles.forgotPasswordText}>Forgot password?</Text>
       </View>
+      {/* Error Message */}
+      {error !== '' && <Text style={styles.error}>{error}</Text>}
       {/* Login Button */}
-      <TouchableOpacity style={styles.button} onPress={hanldelogin}>
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
       {/* Social Media Login Options */}
@@ -119,6 +140,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#373737',
   },
+  forgotPassword: {
+    alignSelf: 'flex-end', // Align to the right
+    marginBottom: 10, // Adjust margin bottom if needed
+  },
+  forgotPasswordText: {
+    color: '#848484',
+    fontSize: 12,
+  },
   inputIcon: {
     position: 'absolute',
     left: 10,
@@ -150,6 +179,10 @@ const styles = StyleSheet.create({
   },
   createProfileLinkText: {
     color: '#FF8A00',
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10,
   },
 });
 

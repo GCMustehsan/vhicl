@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-
+import { Link } from 'expo-router';
 const BottomNavigation = () => {
   return (
     <View style={styles.bottomNav}>
@@ -14,13 +14,15 @@ const BottomNavigation = () => {
         <Text style={styles.navLabel}>Home</Text>
       </TouchableOpacity>
       {/* Channel Icon */}
+      
       <TouchableOpacity style={styles.navItem}>
-        <FontAwesome name="tv" style={styles.navIcon} />
-        <Text style={styles.navLabel}>Channel</Text>
+      <Link href='/Screens/Jobs'> <FontAwesome name="tv" style={styles.navIcon} /></Link> 
+      <Text style={styles.navLabel}>Channel</Text>
       </TouchableOpacity>
+      
       {/* Profile Icon */}
       <TouchableOpacity style={styles.navItem}>
-        <FontAwesome name="user" style={styles.navIcon} />
+      <Link href='/Screens/Profile'>  <FontAwesome name="user" style={styles.navIcon} /></Link>
         <Text style={styles.navLabel}>Profile</Text>
       </TouchableOpacity>
       {/* Alerts Icon */}

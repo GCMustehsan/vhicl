@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, useWindowDimensions,Image,Dimensions } from 'react-native';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-
+const windowWidth = Dimensions.get('window').width;
 const VideoPost = ({ post, activePostId }) => {
   const video = useRef(null);
   const [status, setStatus] = useState();
@@ -62,11 +62,23 @@ const VideoPost = ({ post, activePostId }) => {
         )}
         <SafeAreaView style={{ flex: 1 }}>
           <View style={styles.footer}>
-            {/* Caption */}
-            <Text style={styles.caption}>{post.caption}</Text>
+            {/* Profile picture */}
             
+
+            {/* Caption and username */}
+            <View style={styles.captionContainer}>
+              <Text style={styles.username}>User Name</Text>
+              <Text style={styles.caption}>Caption</Text>
+            </View>
+
             {/* Icon buttons */}
             <View style={styles.iconContainer}>
+            <View style={styles.profilePictureContainer}>
+              <Image
+                source={require('../assets/Images/profile.png')}
+                style={styles.profilePicture}
+              />
+            </View>
               <Ionicons name="heart" size={35} color="white" style={styles.icon} />
               <Ionicons name="share-social-sharp" size={35} color="white" style={styles.icon} />
               <Ionicons name="bookmark" size={35} color="white" style={styles.icon} />
@@ -79,10 +91,14 @@ const VideoPost = ({ post, activePostId }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex:1,
+    width:windowWidth
+  },
   video: {
     width: '100%',
     height: '100%',
+    position:'absolute'
   },
   content: {
     flex: 1,
@@ -95,18 +111,48 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     flexDirection: 'row',
     alignItems: 'flex-end',
+   backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    paddingVertical: 10,
+  },
+  profilePictureContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    overflow: 'hidden',
+    marginRight: 10,
+    alignSelf: 'flex-start',
+    marginBottom:30
+  },
+  profilePicture: {
+    width: '100%',
+    height: '100%',
+  },
+  captionContainer: {
+    flex: 1,
+    marginRight: 10,
+  },
+  username: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 5,
   },
   caption: {
     color: 'white',
-    fontSize: 18,
-    marginBottom: 10,
+    fontSize: 14,
+    marginBottom: 20,
   },
   iconContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
+    backgroundColor: 'transparent',
+    paddingHorizontal: 10,
+    bottom:120,
+    borderRadius: 10,
+    justifyContent: 'flex-end',
   },
   icon: {
-    marginRight: 10,
+    marginLeft: 10,
   },
 });
 
