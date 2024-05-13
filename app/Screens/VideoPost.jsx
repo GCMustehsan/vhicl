@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, useWindowDimensions,Image } from 'react-native';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -62,9 +62,20 @@ const VideoPost = ({ post, activePostId }) => {
         )}
         <SafeAreaView style={{ flex: 1 }}>
           <View style={styles.footer}>
-            {/* Caption */}
-            <Text style={styles.caption}>{post.caption}</Text>
-            
+            {/* Profile picture */}
+            <View style={styles.profilePictureContainer}>
+              <Image
+                 source={require('../assets/Images/createprofile.png')}
+                style={styles.profilePicture}
+              />
+            </View>
+
+            {/* Caption and username */}
+            {/* <View style={styles.captionContainer}>
+              <Text style={styles.username}>{post.user.username}</Text>
+              <Text style={styles.caption}>{post.caption}</Text>
+            </View> */}
+
             {/* Icon buttons */}
             <View style={styles.iconContainer}>
               <Ionicons name="heart" size={35} color="white" style={styles.icon} />
@@ -95,15 +106,41 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     flexDirection: 'row',
     alignItems: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    paddingVertical: 10,
+  },
+  profilePictureContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    overflow: 'hidden',
+    marginRight: 10,
+  },
+  profilePicture: {
+    width: '100%',
+    height: '100%',
+  },
+  captionContainer: {
+    flex: 1,
+    marginRight: 10,
+  },
+  username: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 5,
   },
   caption: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 14,
     marginBottom: 10,
   },
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    paddingHorizontal: 10,
+    borderRadius: 10,
   },
   icon: {
     marginRight: 10,

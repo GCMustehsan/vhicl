@@ -4,6 +4,12 @@ import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, KeyboardAvo
 
 const CreateProfile = () => {
   const [logoMargin, setLogoMargin] = useState(20);
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [usernameError, setUsernameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   const handleInputFocus = () => {
     setLogoMargin(-50); // Move logo upwards when input is focused
@@ -14,6 +20,60 @@ const CreateProfile = () => {
   };
   const handleLoginPress = () => {
     router.push('/Screens/Login')
+  };
+  const validateForm = () => {
+    let valid = true;
+
+    if (!username.trim()) {
+      setUsernameError('Username is required');
+      valid = false;
+    } else {
+      setUsernameError('');
+    }
+
+    if (!email.trim()) {
+      setEmailError('Email is required');
+      valid = false;
+    } else if (!isValidEmail(email)) {
+      setEmailError('Invalid email format');
+      valid = false;
+    } else {
+      setEmailError('');
+    }
+
+    if (!password.trim()) {
+      setPasswordError('Password is required');
+      valid = false;
+    } else if (password.length < 8) {
+      setPasswordError('Password must be at least 8 characters');
+      valid = false;
+    } else if (!isStrongPassword(password)) {
+      setPasswordError('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character');
+      valid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    return valid;
+  };
+
+  const handleCreateProfile = () => {
+    if (validateForm()) {
+      // Submit the form or navigate to the next screen
+      Alert.alert('Success', 'Profile created successfully');
+    }
+  };
+
+  const isValidEmail = (email) => {
+    // Email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isStrongPassword = (password) => {
+    // Password validation regex
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
   };
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -27,37 +87,53 @@ const CreateProfile = () => {
         resizeMode="contain"
       />
       <Text style={styles.heading}>Create Profile</Text>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Username</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your email"
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
-        />
-      </View>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Create Profile</Text>
-      </TouchableOpacity>
+       {/* Username Input */}
+       <View style={styles.inputContainer}>
+          <Text style={styles.label}>Username</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Username"
+            value={username}
+            onChangeText={(text) => setUsername(text)}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+          {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
+        </View>
+
+        {/* Email Input */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+          {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+        </View>
+
+        {/* Password Input */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+          {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+        </View>
+
+        {/* Create Profile Button */}
+        <TouchableOpacity style={styles.button} onPress={handleCreateProfile}>
+          <Text style={styles.buttonText}>Create Profile</Text>
+        </TouchableOpacity>
       <Text style={styles.orText}>Or Continue with</Text>
       <View style={styles.socialIcons}>
         <TouchableOpacity style={styles.socialIcon}>
@@ -158,6 +234,9 @@ const styles = StyleSheet.create({
   loginLink: {
     color: '#FF8A00',
   },
+  errorText:{
+    color:"red"
+  }
 });
 
 export default CreateProfile;
