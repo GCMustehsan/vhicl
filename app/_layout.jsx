@@ -4,7 +4,8 @@
 // return(
 //     <Stack>
 //         <Stack.Screen name="index"/>
-//         <Stack.Screen name="/Screens/CreateProfile"/>
+//         <Stack.Screen name="/Screens/Login"/>
+        
 //     </Stack>
 // );
 // };

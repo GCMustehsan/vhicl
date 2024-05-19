@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, DrawerLayoutAndroid } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, DrawerLayoutAndroid,Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
+const windowHeight = Dimensions.get('window').height;
 const SidebarProfile = () => {
     const drawerRef = useRef(null);
 
@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
     drawer: {
         flex: 1,
         backgroundColor: 'white',
+        height:windowHeight
     },
     profileInfo: {
         flexDirection: 'row',

@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "vhicl",
-    "slug": "my-app",
-    "scheme": "vhicl",
+    "name": "CURTAIN",
+    "slug": "CURTAIN",
+    "scheme": "CURTAIN",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./Screens/assets/Images/curtain.jpeg",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -15,6 +15,7 @@
     "ios": {
       "supportsTablet": true
     },
+    
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",

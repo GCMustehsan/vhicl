@@ -5,12 +5,14 @@ import { Link } from 'expo-router';
 const BottomNavigation = () => {
   return (
     <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.addButton}>
+     
+        <Link href='/Screens/Post' style={styles.addButton}>
+           
           <Text style={styles.addButtonText}><FontAwesome name="plus" /></Text>
-        </TouchableOpacity>
+        </Link>
       {/* Home Icon */}
       <TouchableOpacity style={styles.navItem}>
-        <FontAwesome name="home" style={styles.navIcon} />
+       <Link href='/Screens/FeedScreen'> <FontAwesome name="home" style={styles.navIcon} /></Link>
         <Text style={styles.navLabel}>Home</Text>
       </TouchableOpacity>
       {/* Channel Icon */}
@@ -53,14 +55,14 @@ const styles = StyleSheet.create({
     bottom: 60,
     left: '50%',
     transform: [{ translateX: -10 }],
-    backgroundColor: 'white',
+    backgroundColor: '#FF8A00',
     borderRadius: 32,
-    padding: 10,
+    padding: 15,
     elevation: 3,
   },
   addButtonText: {
-    color: '#FF8A00',
-    fontSize: 24,
+    color: 'white',
+    fontSize: 30,
   },
   navItem: {
     alignItems: 'center',

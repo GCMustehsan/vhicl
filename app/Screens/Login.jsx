@@ -1,7 +1,10 @@
 import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
-
+const staticData = {
+  username: 'Mustehsan',
+  password: 'Ali',
+};
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -16,10 +19,15 @@ const Login = () => {
       setError('Please enter your password');
       return;
     }
-    // Perform login logic here, e.g., send request to server
 
-    // For demonstration purposes, just navigating to Profile screen
-    router.push('/Screens/Profile');
+    if (username === staticData.username && password === staticData.password) {
+      // Perform login logic here, e.g., send request to server
+
+      // For demonstration purposes, just navigating to Profile screen
+      router.push('/Screens/FeedScreen');
+    } else {
+      setError('Invalid username or password');
+    }
   };
 
   return (
@@ -72,7 +80,7 @@ const Login = () => {
       <Text style={styles.orText}>Or Continue with</Text>
       <View style={styles.socialIcons}>
         <TouchableOpacity  style={styles.socialIconTouchable}>
-          <Image source={require('../assets/Images/face.webp')} style={[styles.socialIcon, { height: 50 }]} />
+          <Image source={require('../assets/Images/facebook.webp')} style={[styles.socialIcon, { height: 50 }]} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.socialIconTouchable}>
           <Image source={require('../assets/Images/google.webp')} style={[styles.socialIcon, { height: 50 }]} />

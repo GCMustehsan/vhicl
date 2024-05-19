@@ -1,13 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, useWindowDimensions,Image,Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, useWindowDimensions, Image, Dimensions } from 'react-native';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import BottonNavigation from '../Components/BottomNavigation'
+import { FontAwesome } from '@expo/vector-icons';
 const windowWidth = Dimensions.get('window').width;
 const VideoPost = ({ post, activePostId }) => {
   const video = useRef(null);
   const [status, setStatus] = useState();
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+
+  const handleLikePress = () => {
+    setIsLiked((prevIsLiked) => !prevIsLiked);
+    setLikeCount((prevLikeCount) => (isLiked ? prevLikeCount - 1 : prevLikeCount + 1));
+  };
 
   const isPlaying = status?.isLoaded && status.isPlaying;
 
@@ -62,43 +72,73 @@ const VideoPost = ({ post, activePostId }) => {
         )}
         <SafeAreaView style={{ flex: 1 }}>
           <View style={styles.footer}>
-            {/* Profile picture */}
-            
 
             {/* Caption and username */}
             <View style={styles.captionContainer}>
-              <Text style={styles.username}>User Name</Text>
-              <Text style={styles.caption}>Caption</Text>
+              <Text style={styles.username}>@ Eva Aderson</Text>
+              <Text style={styles.caption}>The Most Stisfying job</Text>
             </View>
 
             {/* Icon buttons */}
             <View style={styles.iconContainer}>
-            <View style={styles.profilePictureContainer}>
-              <Image
-                source={require('../assets/Images/profile.png')}
-                style={styles.profilePicture}
-              />
-            </View>
-              <Ionicons name="heart" size={35} color="white" style={styles.icon} />
-              <Ionicons name="share-social-sharp" size={35} color="white" style={styles.icon} />
-              <Ionicons name="bookmark" size={35} color="white" style={styles.icon} />
+              <Pressable
+
+                android_ripple={{ color: 'white' }}
+              >
+                <View style={styles.profilePictureContainer}>
+                  <View style={styles.profilePictureBorder}>
+                    <Image
+                      source={require('../assets/Images/profile.png')}
+                      style={styles.profilePicture}
+                    />
+                  </View>
+                </View>
+              </Pressable>
+              <Pressable onPress={handleLikePress} android_ripple={{ color: 'white' }}>
+                <Ionicons
+                  name={isLiked ? 'heart' : 'heart-outline'}
+                  size={35}
+                  color={isLiked ? 'red' : 'white'}
+                  style={styles.icon}
+                />
+              </Pressable>
+              <Text style={styles.likeCount}>{likeCount}</Text>
+              <Pressable
+
+                android_ripple={{ color: 'white' }}
+              >
+                <FontAwesome name="commenting" size={35} color="white" style={styles.icon} />
+              </Pressable>
+              <Pressable
+
+                android_ripple={{ color: 'white' }}
+              >
+                <FontAwesome5 name="hand-holding-heart" size={35} color="white" style={styles.icon} />
+              </Pressable>
+              <Pressable
+
+                android_ripple={{ color: 'white' }}
+              >
+                <FontAwesome5 name="share" size={35} color="white" style={styles.icon} />
+              </Pressable>
             </View>
           </View>
         </SafeAreaView>
       </Pressable>
+      <BottonNavigation/>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
-    width:windowWidth
+    flex: 1,
+    width: windowWidth
   },
   video: {
     width: '100%',
     height: '100%',
-    position:'absolute'
+    position: 'absolute'
   },
   content: {
     flex: 1,
@@ -111,7 +151,7 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     flexDirection: 'row',
     alignItems: 'flex-end',
-   backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: 'transparent',
     paddingVertical: 10,
   },
   profilePictureContainer: {
@@ -119,17 +159,31 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     overflow: 'hidden',
-    marginRight: 10,
+    marginRight: 5,
     alignSelf: 'flex-start',
-    marginBottom:30
+    marginBottom: 30
+  },
+  profilePictureBorder: {
+    backgroundColor: 'white',
+    borderRadius: 25,
+    overflow: 'hidden',
   },
   profilePicture: {
     width: '100%',
     height: '100%',
   },
+  plusIcon: {
+    position: 'absolute',
+    bottom: -8,
+    right: 7,
+    backgroundColor: 'red',
+    borderRadius: 40,
+    margin: 5,
+  },
   captionContainer: {
     flex: 1,
     marginRight: 10,
+    marginBottom:35
   },
   username: {
     color: 'white',
@@ -147,12 +201,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent',
     paddingHorizontal: 10,
-    bottom:120,
+    bottom: 100,
     borderRadius: 10,
     justifyContent: 'flex-end',
   },
   icon: {
     marginLeft: 10,
+    marginBottom: 10
+  },
+  likeCount: {
+    color: 'white',
+    marginLeft: 5,
+    marginBottom: 10,
   },
 });
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, FlatList, StatusBar, StyleSheet } from 'react-native';
 import VideoPost from './VideoPost';
-
+import Sidebar from './Sidebar'
 const dummyPosts = [
   {
     id: '2',
@@ -66,7 +66,9 @@ const FeedScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Sidebar/>
       <StatusBar style="light" />
+      {/* <Sidebar /> Add the Sidebar component here */}
       <FlatList
             data={posts}
             renderItem={({ item }) => (

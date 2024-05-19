@@ -5,21 +5,12 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const App = () => {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Navigate to the CreateProfile screen after 3 seconds
-      router.push('/Screens/Onbourding');
-    }, 2000);
-
-    // Clear the timeout when the component unmounts
-    return () => clearTimeout(timer);
-  }, []);
   return (
     <View style={styles.container}>
       {/* Logo */}
       <View style={styles.logoContainer}>
         <Image
-          source={require('../assets/Images/logo.png')}
+          source={require('../assets/Images/image.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -49,9 +40,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: windowWidth * 0.7, // Adjust width based on screen width
-    aspectRatio: 2, // Maintain aspect ratio
-    marginTop:80,
+   width:windowWidth-100,
+   borderRadius: windowWidth/3, // Make the logo image round
   },
   pictureContainer: {
     flex: 1,
