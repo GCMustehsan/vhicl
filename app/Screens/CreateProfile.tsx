@@ -8,8 +8,9 @@ import * as WebBrowser from "expo-web-browser";
 import { useWarmUpBrowser } from "../hooks/useWarmUpBrowser";
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Facebook from 'expo-facebook';
-
+import { LoginManager } from 'react-native-fbsdk-next';
 WebBrowser.maybeCompleteAuthSession();
+
 const CreateProfile = () => {
   const [logoMargin, setLogoMargin] = useState(20);
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -17,6 +18,7 @@ const CreateProfile = () => {
   const [username, setUsername] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -159,7 +161,7 @@ const CreateProfile = () => {
   const handleFacebookLogin = async () => {
     try {
       const result = await Facebook.logInWithReadPermissionsAsync({
-        permissions: ['public_profile', 'email'],
+        permissions: ['public_profile'],
       });
 
       if (result.type === 'success') {
@@ -229,12 +231,15 @@ const CreateProfile = () => {
                 <TextInput
                   style={styles.input}
                   placeholder="Password"
-                  secureTextEntry
+                  secureTextEntry={!passwordVisible}
                   onFocus={handleInputFocus}
                   onBlur={handleInputBlur}
                   value={password}
                   onChangeText={setPassword}
                 />
+                <TouchableOpacity style={styles.eyeIconWrapper} onPress={() => setPasswordVisible(!passwordVisible)}>
+                  <Feather name={passwordVisible ? 'eye' : 'eye-off'} size={20} color="gray" />
+                </TouchableOpacity>
               </View>
             </View>
             {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
@@ -283,6 +288,7 @@ const styles = StyleSheet.create({
   scrollViewContainer: {
     flexGrow: 1,
     justifyContent: 'center',
+    backgroundColor:'white'
   },
   container: {
     flex: 1,
@@ -333,6 +339,11 @@ const styles = StyleSheet.create({
     top: 14,
     left: 10,
   },
+  eyeIconWrapper: {
+    position: 'absolute',
+    top: 14,
+    right: 20,
+  },
   button: {
     backgroundColor: '#FF8A00',
     paddingVertical: 10,
@@ -344,6 +355,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
+    textAlign:'center',
+    alignSelf:'center'
   },
   orText: {
     marginBottom: 10,

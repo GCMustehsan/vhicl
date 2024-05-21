@@ -5,4 +5,5 @@ module.exports = {
     extra: {
       clerkPublishableKey: process.env.CLERK_PUBLISHABLE_KEY,
     },
+   
   };

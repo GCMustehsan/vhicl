@@ -1,15 +1,35 @@
+import React, { useState,useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet,Platform } from 'react-native';
 import { Link, router } from 'expo-router';
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { useOAuth } from "@clerk/clerk-expo";
+import * as WebBrowser from "expo-web-browser";
+import { useWarmUpBrowser } from "../hooks/useWarmUpBrowser";
+import * as AppleAuthentication from 'expo-apple-authentication';
+import { useSignUp } from "@clerk/clerk-expo";
 const staticData = {
   username: 'Mustehsan',
   password: 'Ali',
 };
+WebBrowser.maybeCompleteAuthSession();
+
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
+  useWarmUpBrowser();
+  const [appleAuthSupported, setAppleAuthSupported] = useState(false);
 
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      AppleAuthentication.isAvailableAsync().then((available) => {
+        setAppleAuthSupported(available);
+      });
+    }
+  }, []);
   const handleLogin = () => {
     if (username.trim() === '') {
       setError('Please enter your username');
@@ -30,6 +50,36 @@ const Login = () => {
     }
   };
 
+  const onPress = React.useCallback(async () => {
+    try {
+      const { createdSessionId, signIn, signUp, setActive } =
+        await startOAuthFlow();
+
+      if (createdSessionId) {
+        setActive({ session: createdSessionId });
+      } else {
+        // Use signIn or signUp for next steps such as MFA
+      }
+    } catch (err:any) {
+      setErrorMessage(err.message);
+    }
+  }, []);
+  
+  const handleAppleLogin = async () => {
+    if (Platform.OS === 'ios') {
+      try {
+        const credential = await AppleAuthentication.signInAsync({
+          requestedScopes: [AppleAuthentication.AppleAuthenticationScope.FULL_NAME],
+        });
+        console.log('Apple Login credential:', credential);
+        // Handle the Apple login credential
+      } catch (error:any) {
+        setErrorMessage('Apple Login Error')
+      }
+    } else {
+      setErrorMessage('Apple Login is not supported on Android.')
+    }
+  }
   return (
     <View style={styles.container}>
       {/* Login Logo */}
@@ -46,6 +96,7 @@ const Login = () => {
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Username</Text>
         <View style={styles.inputWrapper}>
+          <Feather name="user" size={20} color="gray" style={styles.inputIcon} />
           <TextInput
             style={styles.input}
             placeholder="Username"
@@ -58,13 +109,20 @@ const Login = () => {
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Password</Text>
         <View style={styles.inputWrapper}>
+          <Feather name="lock" size={20} color="gray" style={styles.inputIcon} />
           <TextInput
             style={styles.input}
             placeholder="Password"
-            secureTextEntry
+            secureTextEntry={!passwordVisible}
             value={password}
             onChangeText={setPassword}
           />
+          <TouchableOpacity
+            onPress={() => setPasswordVisible(!passwordVisible)}
+            style={styles.eyeIconWrapper}
+          >
+            <Feather name={passwordVisible ? "eye" : "eye-off"} size={20} color="gray" />
+          </TouchableOpacity>
         </View>
       </View>
       <View style={styles.forgotPassword}>
@@ -73,23 +131,23 @@ const Login = () => {
       {/* Error Message */}
       {error !== '' && <Text style={styles.error}>{error}</Text>}
       {/* Login Button */}
+      {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
       {/* Social Media Login Options */}
       <Text style={styles.orText}>Or Continue with</Text>
       <View style={styles.socialIcons}>
-        <TouchableOpacity  style={styles.socialIconTouchable}>
+        <TouchableOpacity>
           <Image source={require('../assets/Images/facebook.webp')} style={[styles.socialIcon, { height: 50 }]} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.socialIconTouchable}>
-          <Image source={require('../assets/Images/google.webp')} style={[styles.socialIcon, { height: 50 }]} />
+        <TouchableOpacity onPress={onPress}>
+          <Image source={require('../assets/Images/google.webp')}  style={[styles.socialIcon, { height: 50 }]} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.socialIconTouchable}>
+        <TouchableOpacity onPress={handleAppleLogin}>
           <Image source={require('../assets/Images/apple.jpg')} style={[styles.socialIcon, { height: 50 }]} />
         </TouchableOpacity>
       </View>
-      
       {/* Create Profile Link */}
       <Text style={styles.createProfileLink}>Don't have an account? <Link href='/Screens/CreateProfile'><Text style={styles.createProfileLinkText}>Create profile</Text></Link></Text>
     </View>
@@ -123,51 +181,54 @@ const styles = StyleSheet.create({
   label: {
     color: '#848484',
   },
-  input: {
-    height: 40,
+  errorMessage: {
+    color: "red",
+    fontSize: 14,
+    fontWeight: "bold",
+    marginTop: 8,
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     marginTop: 5,
-    width: '100%', // Increase input width
+    width: '100%',
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    paddingHorizontal: 10,
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  eyeIconWrapper: {
+    padding: 5,
   },
   button: {
     backgroundColor: '#FF8A00',
-    paddingVertical: 10, // Increase button height
-    paddingHorizontal: 100, // Increase button width
+    paddingVertical: 10,
+    paddingHorizontal: 100,
     borderRadius: 8,
     marginBottom: 20,
   },
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 16, // Increase button text size
+    fontSize: 16,
   },
   orText: {
     marginBottom: 10,
     color: '#373737',
   },
   forgotPassword: {
-    alignSelf: 'flex-end', // Align to the right
-    marginBottom: 10, // Adjust margin bottom if needed
-  },
-  forgotPasswordText: {
-    color: '#848484',
-    fontSize: 12,
-  },
-  inputIcon: {
-    position: 'absolute',
-    left: 10,
-  },
-  icon: {
-    width: 20,
-    height: 20,
-    tintColor: '#848484',
-  },
-  forgotPassword: {
-    alignSelf: 'flex-end', // Align to the right
-    marginBottom: 10, // Adjust margin bottom if needed
+    alignSelf: 'flex-end',
+    marginBottom: 10,
   },
   forgotPasswordText: {
     color: '#848484',
