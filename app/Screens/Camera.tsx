@@ -1,24 +1,48 @@
-import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useState, useRef } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View,Dimensions } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { Camera, useCameraPermissions, CameraType, CameraView } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
+import { Button, StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 const windowWidth = Dimensions.get('window').width;
-export default function App() {
-  const [facing, setFacing] = useState('back');
-  const [permission, requestPermission] = useCameraPermissions();
-  const [capturedVideo, setCapturedVideo] = useState(null);
-  const cameraRef = useRef();
 
-  if (!permission) {
-    // Camera permissions are still loading.
+export default function App() {
+  const [facing, setFacing] = useState<CameraType>('back');  // Use CameraType as a type annotation
+  const [permission, requestPermission] = useCameraPermissions();
+  const [microphonePermission, setMicrophonePermission] = useState<boolean | null>(null);
+  const [capturedVideo, setCapturedVideo] = useState<string | null>(null);
+  const cameraRef = useRef<any>(null);  
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestMicrophonePermissionsAsync();
+      setMicrophonePermission(status === 'granted');
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (permission && !permission.granted) {
+      console.log('Camera permission was denied');
+    }
+  }, [permission]);
+
+  if (!permission || microphonePermission === null) {
+    // Permissions are still loading.
     return <View />;
   }
 
-  if (!permission.granted) {
-    // Camera permissions are not granted yet.
+  if (!permission.granted || !microphonePermission) {
+    // Permissions are not granted yet.
     return (
       <View style={styles.container}>
-        <Text style={styles.text}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="Grant Permission" />
+        <Text style={styles.text}>We need your permission to show the camera and record audio</Text>
+        <Button onPress={requestPermission} title="Grant Camera Permission" />
+        <Button
+          onPress={async () => {
+            const { status } = await Camera.requestMicrophonePermissionsAsync();
+            setMicrophonePermission(status === 'granted');
+          }}
+          title="Grant Microphone Permission"
+        />
       </View>
     );
   }
@@ -28,14 +52,18 @@ export default function App() {
   }
 
   async function startRecording() {
-    const { uri } = await cameraRef.current.recordAsync();
-    setCapturedVideo(uri);
+    if (cameraRef.current) {
+      const { uri } = await cameraRef.current.recordAsync();
+      setCapturedVideo(uri);
+    }
   }
 
   async function stopRecording() {
     try {
-      await cameraRef.current.stopRecording();
-      setCapturedVideo(null);
+      if (cameraRef.current) {
+        await cameraRef.current.stopRecording();
+        setCapturedVideo(null);
+      }
     } catch (error) {
       console.error('Error stopping recording:', error);
     }
@@ -43,8 +71,11 @@ export default function App() {
 
   function handleSave() {
     // Implement logic to save the captured video
-    alert('Video saved successfully!');
-    setCapturedVideo(null);
+    if (capturedVideo) {
+      MediaLibrary.saveToLibraryAsync(capturedVideo);
+      alert('Video saved successfully!');
+      setCapturedVideo(null);
+    }
   }
 
   function handleDiscard() {
@@ -53,10 +84,10 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+      <CameraView style={styles.camera}  facing={facing} ref={cameraRef}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
+          <Ionicons name="camera-reverse-outline" size={24} color="white" />
           </TouchableOpacity>
           {!capturedVideo ? (
             <TouchableOpacity style={styles.button} onPress={startRecording}>

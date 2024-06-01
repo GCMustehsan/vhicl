@@ -5,7 +5,7 @@ const windowWidth = Dimensions.get('window').width;
 
 const Onboarding2 = () => {
   const handleskip=()=>{
-    router.push('/Screens/CreateProfile')
+    router.push('/Screens/Login')
   }
   return (
     <View style={styles.container}>

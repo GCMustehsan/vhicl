@@ -1,16 +1,12 @@
-import React, { useState,useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet,Platform } from 'react-native';
-import { Link, router } from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Platform } from 'react-native';
+import { Link, useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { useOAuth } from "@clerk/clerk-expo";
 import * as WebBrowser from "expo-web-browser";
 import { useWarmUpBrowser } from "../hooks/useWarmUpBrowser";
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { useSignUp } from "@clerk/clerk-expo";
-const staticData = {
-  username: 'Mustehsan',
-  password: 'Ali',
-};
+
 WebBrowser.maybeCompleteAuthSession();
 
 const Login = () => {
@@ -22,6 +18,7 @@ const Login = () => {
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
   useWarmUpBrowser();
   const [appleAuthSupported, setAppleAuthSupported] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
@@ -30,7 +27,8 @@ const Login = () => {
       });
     }
   }, []);
-  const handleLogin = () => {
+
+  const handleLogin = async () => {
     if (username.trim() === '') {
       setError('Please enter your username');
       return;
@@ -39,32 +37,48 @@ const Login = () => {
       setError('Please enter your password');
       return;
     }
-
-    if (username === staticData.username && password === staticData.password) {
-      // Perform login logic here, e.g., send request to server
-
-      // For demonstration purposes, just navigating to Profile screen
-      router.push('/Screens/FeedScreen');
-    } else {
-      setError('Invalid username or password');
+  
+    try {
+      const response = await fetch('https://curtainsocial.com/v1/Api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+  
+      const result = await response.json();
+  
+      console.log('Login response:', result); // Log the response to debug
+  
+      // Check for 'sucess' instead of 'success'
+      if (response.ok && result.sucess) {
+        // Navigate to Feed screen if login is successful
+        router.push('/Screens/Feed');
+      } else {
+        setError(result.message || 'Invalid username or password');
+      }
+    } catch (error) {
+      console.error('Login error:', error); // Log any errors to debug
+      setError('An error occurred. Please try again.');
     }
   };
+  
 
   const onPress = React.useCallback(async () => {
     try {
-      const { createdSessionId, signIn, signUp, setActive } =
-        await startOAuthFlow();
+      const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow();
 
       if (createdSessionId) {
         setActive({ session: createdSessionId });
       } else {
         // Use signIn or signUp for next steps such as MFA
       }
-    } catch (err:any) {
+    } catch (err) {
       setErrorMessage(err.message);
     }
   }, []);
-  
+
   const handleAppleLogin = async () => {
     if (Platform.OS === 'ios') {
       try {
@@ -73,16 +87,16 @@ const Login = () => {
         });
         console.log('Apple Login credential:', credential);
         // Handle the Apple login credential
-      } catch (error:any) {
-        setErrorMessage('Apple Login Error')
+      } catch (error) {
+        setErrorMessage('Apple Login Error');
       }
     } else {
-      setErrorMessage('Apple Login is not supported on Android.')
+      setErrorMessage('Apple Login is not supported on Android.');
     }
-  }
+  };
+
   return (
     <View style={styles.container}>
-      {/* Login Logo */}
       <View style={styles.logoContainer}>
         <Image
           source={require('../assets/Images/login.png')}
@@ -90,9 +104,7 @@ const Login = () => {
           resizeMode="contain"
         />
       </View>
-      {/* Login Heading */}
       <Text style={styles.heading}>Log In</Text>
-      {/* Username Input */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Username</Text>
         <View style={styles.inputWrapper}>
@@ -105,7 +117,6 @@ const Login = () => {
           />
         </View>
       </View>
-      {/* Password Input */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Password</Text>
         <View style={styles.inputWrapper}>
@@ -125,30 +136,26 @@ const Login = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.forgotPassword}>
+      <TouchableOpacity style={styles.forgotPassword} onPress={() => router.push('/Screens/ForgotPassword')}>
         <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-      </View>
-      {/* Error Message */}
+      </TouchableOpacity>
       {error !== '' && <Text style={styles.error}>{error}</Text>}
-      {/* Login Button */}
       {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-      {/* Social Media Login Options */}
       <Text style={styles.orText}>Or Continue with</Text>
       <View style={styles.socialIcons}>
         <TouchableOpacity>
           <Image source={require('../assets/Images/facebook.webp')} style={[styles.socialIcon, { height: 50 }]} />
         </TouchableOpacity>
         <TouchableOpacity onPress={onPress}>
-          <Image source={require('../assets/Images/google.webp')}  style={[styles.socialIcon, { height: 50 }]} />
+          <Image source={require('../assets/Images/google.webp')} style={[styles.socialIcon, { height: 50 }]} />
         </TouchableOpacity>
         <TouchableOpacity onPress={handleAppleLogin}>
           <Image source={require('../assets/Images/apple.jpg')} style={[styles.socialIcon, { height: 50 }]} />
         </TouchableOpacity>
       </View>
-      {/* Create Profile Link */}
       <Text style={styles.createProfileLink}>Don't have an account? <Link href='/Screens/CreateProfile'><Text style={styles.createProfileLinkText}>Create profile</Text></Link></Text>
     </View>
   );

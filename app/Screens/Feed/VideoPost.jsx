@@ -1,46 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, useWindowDimensions, Image, Dimensions, Share } from 'react-native';
-import { Video, ResizeMode } from 'expo-av';
+import { View, Text, StyleSheet, Pressable, useWindowDimensions, Image, Dimensions } from 'react-native';
+import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { FontAwesome5, FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import BottonNavigation from '../../Components/BottomNavigation'
+import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import BottomNavigation from '../Components/BottomNavigation';
-import CommentModal from '../Components/CommentModal';
-
 const windowWidth = Dimensions.get('window').width;
-
 const VideoPost = ({ post, activePostId }) => {
   const video = useRef(null);
   const [status, setStatus] = useState();
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
-  const [comments, setComments] = useState([]);
-  const [commentModalVisible, setCommentModalVisible] = useState(false);
 
   const handleLikePress = () => {
     setIsLiked((prevIsLiked) => !prevIsLiked);
     setLikeCount((prevLikeCount) => (isLiked ? prevLikeCount - 1 : prevLikeCount + 1));
-  };
-
-  const handleCommentPress = () => {
-    setCommentModalVisible(true);
-  };
-
-  const addComment = (comment) => {
-    setComments((prevComments) => [...prevComments, comment]);
-  };
-
-  const handleSharePress = async () => {
-    try {
-      await Share.share({
-        message: `Check out this video: ${post.video}`,
-        url: post.video,
-      });
-    } catch (error) {
-      alert('Error sharing the video: ' + error.message);
-    }
   };
 
   const isPlaying = status?.isLoaded && status.isPlaying;
@@ -57,7 +34,7 @@ const VideoPost = ({ post, activePostId }) => {
     if (activePostId === post.id) {
       video.current.playAsync();
     }
-  }, [activePostId]);
+  }, [activePostId, video.current]);
 
   const onPress = () => {
     if (!video.current) {
@@ -69,11 +46,9 @@ const VideoPost = ({ post, activePostId }) => {
       video.current.playAsync();
     }
   };
-
-  const HandleSupport = () => {
-    router.push('/Screens/Support');
-  };
-
+  const HandleSupport=()=>{
+    router.push('/Screens/Support')
+  }
   return (
     <View style={[styles.container, { height }]}>
       <Video
@@ -104,16 +79,19 @@ const VideoPost = ({ post, activePostId }) => {
             {/* Caption and username */}
             <View style={styles.captionContainer}>
               <Text style={styles.username}>@ Eva Aderson</Text>
-              <Text style={styles.caption}>The Most Satisfying job</Text>
+              <Text style={styles.caption}>The Most Stisfying job</Text>
             </View>
 
             {/* Icon buttons */}
             <View style={styles.iconContainer}>
-              <Pressable android_ripple={{ color: 'white' }}>
+              <Pressable
+
+                android_ripple={{ color: 'white' }}
+              >
                 <View style={styles.profilePictureContainer}>
                   <View style={styles.profilePictureBorder}>
                     <Image
-                      source={require('../assets/Images/profile.png')}
+                      source={require('../../assets/Images/profile.png')}
                       style={styles.profilePicture}
                     />
                   </View>
@@ -128,26 +106,29 @@ const VideoPost = ({ post, activePostId }) => {
                 />
               </Pressable>
               <Text style={styles.likeCount}>{likeCount}</Text>
-              <Pressable onPress={handleCommentPress} android_ripple={{ color: 'white' }}>
+              <Pressable
+
+                android_ripple={{ color: 'white' }}
+              >
                 <FontAwesome name="commenting" size={35} color="white" style={styles.icon} />
               </Pressable>
-              <Pressable onPress={HandleSupport} android_ripple={{ color: 'white' }}>
+              <Pressable
+                onPress={HandleSupport}
+                android_ripple={{ color: 'white' }}
+              >
                 <FontAwesome5 name="hand-holding-heart" size={35} color="white" style={styles.icon} />
               </Pressable>
-              <Pressable onPress={handleSharePress} android_ripple={{ color: 'white' }}>
+              <Pressable
+
+                android_ripple={{ color: 'white' }}
+              >
                 <FontAwesome5 name="share" size={35} color="white" style={styles.icon} />
               </Pressable>
             </View>
           </View>
         </SafeAreaView>
       </Pressable>
-      <BottomNavigation />
-      <CommentModal
-        visible={commentModalVisible}
-        onClose={() => setCommentModalVisible(false)}
-        comments={comments}
-        addComment={addComment}
-      />
+      <BottonNavigation/>
     </View>
   );
 };
@@ -205,7 +186,7 @@ const styles = StyleSheet.create({
   captionContainer: {
     flex: 1,
     marginRight: 10,
-    marginBottom: 35
+    marginBottom:35
   },
   username: {
     color: 'white',

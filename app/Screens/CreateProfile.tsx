@@ -39,7 +39,7 @@ const CreateProfile = () => {
       });
     }
   }, []);
-  
+
   const onSignUpPress = async () => {
     if (!isLoaded) {
       return;
@@ -83,7 +83,7 @@ const CreateProfile = () => {
 
       console.log("Preparing email verification...");
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-    
+
       console.log("Setting pending verification state to true...");
       setPendingVerification(true);
     } catch (err: any) {
@@ -96,17 +96,53 @@ const CreateProfile = () => {
       return;
     }
 
+    if (!username || !emailAddress || !password) {
+      setErrorMessage('All fields are required.');
+      return;
+    }
+
     try {
       // Attempt email verification
       const completeSignUp = await signUp.attemptEmailAddressVerification({ code });
-    
-      // If verification is successful, setActive session
-      await setActive({ session: completeSignUp.createdSessionId });
+
+      // Prepare the data to send to your API
+      const userData = {
+        username: username,
+        email: emailAddress,
+        password: password, // Include the password
+      };
+
+      // Send a POST request to your API to store user data
+      const response = await fetch('https://curtainsocial.com/v1/Api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Handle successful response from the API
+        console.log('User data stored successfully:', result);
+
+        // If the data is stored successfully, set the active session
+        await setActive({ session: completeSignUp.createdSessionId });
+        // Navigate to another screen or show a success message
+      } else {
+        // Handle errors from the API
+        console.error('Error storing user data:', result);
+        setErrorMessage(result.message || 'Error storing user data');
+      }
     } catch (err: any) {
       // Handle verification errors and update errorMessage state
       setErrorMessage(err.message);
     }
   };
+
+
+
 
   const handleInputFocus = () => {
     setLogoMargin(-50);
@@ -130,11 +166,11 @@ const CreateProfile = () => {
       } else {
         // Use signIn or signUp for next steps such as MFA
       }
-    } catch (err:any) {
+    } catch (err: any) {
       setErrorMessage(err.message);
     }
   }, []);
-  
+
   const handleAppleLogin = async () => {
     if (Platform.OS === 'ios') {
       try {
@@ -143,7 +179,7 @@ const CreateProfile = () => {
         });
         console.log('Apple Login credential:', credential);
         // Handle the Apple login credential
-      } catch (error:any) {
+      } catch (error: any) {
         setErrorMessage('Apple Login Error')
       }
     } else {
@@ -151,37 +187,37 @@ const CreateProfile = () => {
     }
   }
 
-  useEffect(() => {
-    // Initialize Facebook SDK
-    Facebook.initializeAsync({
-      appId: '292887143789923',
-    });
-  }, []);
-  
-  const handleFacebookLogin = async () => {
-    try {
-      const result = await Facebook.logInWithReadPermissionsAsync({
-        permissions: ['public_profile'],
-      });
+  // useEffect(() => {
+  //   // Initialize Facebook SDK
+  //   Facebook.initializeAsync({
+  //     appId: '292887143789923',
+  //   });
+  // }, []);
 
-      if (result.type === 'success') {
-        const { token } = result;
+  // const handleFacebookLogin = async () => {
+  //   try {
+  //     const result = await Facebook.logInWithReadPermissionsAsync({
+  //       permissions: ['public_profile'],
+  //     });
 
-        // Get user information using the token
-        const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
-        const data = await response.json();
+  //     if (result.type === 'success') {
+  //       const { token } = result;
 
-        // Now you can use the data to sign up or sign in the user
-        console.log('Facebook user data:', data);
-      } else {
-        // Handle the case where the user cancels the login process
-        console.log('Facebook login cancelled');
-      }
-    } catch (error) {
-      // Handle errors during Facebook login
-      console.error('Facebook login error:', error);
-    }
-  };
+  //       // Get user information using the token
+  //       const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+  //       const data = await response.json();
+
+  //       // Now you can use the data to sign up or sign in the user
+  //       console.log('Facebook user data:', data);
+  //     } else {
+  //       // Handle the case where the user cancels the login process
+  //       console.log('Facebook login cancelled');
+  //     }
+  //   } catch (error) {
+  //     // Handle errors during Facebook login
+  //     console.error('Facebook login error:', error);
+  //   }
+  // };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -248,7 +284,7 @@ const CreateProfile = () => {
             </TouchableOpacity>
             <Text style={styles.orText}>Or Continue with</Text>
             <View style={styles.socialIcons}>
-              <TouchableOpacity style={styles.socialIcon} onPress={handleFacebookLogin}>
+              <TouchableOpacity style={styles.socialIcon} >
                 <Image source={require('../assets/Images/facebook.webp')} style={styles.socialImage} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.socialIcon} onPress={onPress}>
@@ -288,7 +324,7 @@ const styles = StyleSheet.create({
   scrollViewContainer: {
     flexGrow: 1,
     justifyContent: 'center',
-    backgroundColor:'white'
+    backgroundColor: 'white'
   },
   container: {
     flex: 1,
@@ -334,7 +370,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   inputIcon: {
-    color:'gray',
+    color: 'gray',
     position: 'absolute',
     top: 14,
     left: 10,
@@ -355,13 +391,13 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
-    textAlign:'center',
-    alignSelf:'center'
+    textAlign: 'center',
+    alignSelf: 'center'
   },
   orText: {
     marginBottom: 10,
     color: '#373737',
-    textAlign:'center'
+    textAlign: 'center'
   },
   socialIcons: {
     flexDirection: 'row',

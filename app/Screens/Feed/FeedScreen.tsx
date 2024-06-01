@@ -65,8 +65,7 @@ const FeedScreen = () => {
 
   return (
     <View style={styles.container}>
-      
-  
+       
       <FlatList
             data={posts}
             renderItem={({ item }) => (
